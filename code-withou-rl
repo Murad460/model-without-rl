@@ -1,0 +1,42 @@
+
+algorithm  without using RL.ipynb
+
+import pandas as pd 
+import numpy as np 
+from sklearn.linear_model import LinearRegression,LogisticRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor,StackingRegressor,VotingRegressor
+from xgboost import XGBRegressor
+from catboost import CatBoostRegressor
+from sklearn.svm import SVC
+from sklearn.model_selection import train_test_split
+
+!pip install catboost
+
+dict={
+    "Sensor1":['1','2'],
+    "Sensor2":['2','2'],
+    "Sensor3":['3','3']}
+
+nw=pd.DataFrame.from_dict(dict)
+
+esitmator=[
+    ("lin_reg",LinearRegression()),
+    # ("Log_reg",LogisticRegression()),
+    ("XG_reg",XGBRegressor()),
+    ("cat_reg",CatBoostRegressor()),
+    ("dec_reg",DecisionTreeRegressor()),
+    
+]
+
+model=StackingRegressor(
+    estimators=esitmator,
+    final_estimator=RandomForestRegressor(n_estimators=10,random_state=42)
+)
+
+x=nw
+y=nw[["Sensor3"]]
+
+X_train,X_test,Y_train,Y_test=train_test_split(x,y)
+
+model.fit(X_train,Y_train)
